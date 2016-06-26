@@ -3,7 +3,7 @@ import datetime
 import os
 import os.path
 
-LOG_DIR = "log"
+LOG_DIR = "/home/pi/coin-dispenser/log"
 LOG_FORMAT = "%(asctime)s %(levelname)s %(module)s: %(message)s"
 FILENAME_FORMAT = "%Y-%m-%d.log"
 
