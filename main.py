@@ -8,8 +8,8 @@ POLLING_INTERVAL = 5
 PAUSE_BETWEEN_COINS_SEC = 2
 DEBUG_FMT = "%H:%M:%S:%f"
 
-working = False
-coins_to_dispense = 0
+#working = False
+#coins_to_dispense = 0
 
 def setup_arm():
     arm_controller.setup()
@@ -55,11 +55,20 @@ def poll(scheduler):
 
 
 def start_poll_loop():
-    print "Polling every %d secs..." % POLLING_INTERVAL
+    #print "Polling every %d secs..." % POLLING_INTERVAL
 
-    scheduler = sched.scheduler(time.time, time.sleep)
-    scheduler.enter(1, 1, poll, (scheduler,))
-    scheduler.run()
+    while True:
+        to_dispense = dispenser_client.coins_to_dispense()
+        while to_dispense > 0:
+            arm_controller.dispense_coin()
+            sleep_time = arm_controller.get_total_dispensing_time()
+            if to_dispense > 1:
+                sleep_time += PAUSE_BETWEEN_COINS_SEC
+            time.sleep(sleep_time)
+
+    #scheduler = sched.scheduler(time.time, time.sleep)
+    #scheduler.enter(1, 1, poll, (scheduler,))
+    #scheduler.run()
 
 
 def debug(msg):
