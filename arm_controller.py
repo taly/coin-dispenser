@@ -27,9 +27,11 @@ def move_back():
     GPIO.output(10, GPIO.LOW)
     GPIO.output(8, GPIO.HIGH)
 	
-def serve_coin():
+def dispense_coin():
     move_forward()
     time.sleep(PAUSE_TIME_SEC)
     move_back()
-    
+
+def get_total_dispensing_time():
+    return MOVE_TIME_SEC * 2 + PAUSE_TIME_SEC    
     

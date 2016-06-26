@@ -9,7 +9,7 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "application/json")
         self.wfile.write("\r\n")
         
-        resp = "{\"coins\": 2}\n"
+        resp = "{\"coins\": 1}\n"
         self.wfile.write(resp)
 
 print "Serving on localhost/8000..."
