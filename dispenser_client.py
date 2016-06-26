@@ -9,8 +9,8 @@ HOST = "https://coinme.herokuapp.com"
 PORT = 8000
 
 def coins_to_dispense():
-#    url = "%s:%d" % (HOST, PORT)
     try:
+        #url = "%s:%d" % (HOST, PORT)
         url = "%s/coins_to_dispense" % HOST
         raw_response = urllib2.urlopen(url)
         str_response = raw_response.read()

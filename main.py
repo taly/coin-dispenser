@@ -11,7 +11,7 @@ PAUSE_BETWEEN_COINS_SEC = 0.3
 DEBUG_FMT = "%H:%M:%S:%f"
 
 def setup_arm():
-    s = 1/0
+    logging.info("Setting up arm")
     arm_controller.setup()
     arm_controller.on()
     #arm_controller.move_forward()
@@ -48,8 +48,10 @@ def poll():
     else:
         logging.debug(log_str)
 
+    turn_off_arm = False
     if to_dispense > 0:
         arm_controller.on()
+        turn_off_arm = True
 
     while to_dispense > 0:
         logging.info("\tDispensing coin...")
@@ -61,7 +63,8 @@ def poll():
         to_dispense -= 1
         logging.info("\t\tDispensed")
 
-    arm_controller.off()
+    if turn_off_arm:
+        arm_controller.off()
 
 
 def debug(msg):
