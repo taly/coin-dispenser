@@ -1,8 +1,8 @@
 import time
 import RPi.GPIO as GPIO
 
-MOVE_TIME_SEC = 1
-PAUSE_TIME_SEC = 1
+MOVE_TIME_SEC = 0.2
+PAUSE_TIME_SEC = 0.2
 
 def setup():
     GPIO.setmode(GPIO.BOARD)

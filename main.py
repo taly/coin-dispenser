@@ -1,14 +1,17 @@
 import time
 import datetime
-import sched
+import logging
+import traceback
 import arm_controller
 import dispenser_client
+import dispenser_log
 
 POLLING_INTERVAL = 1
-PAUSE_BETWEEN_COINS_SEC = 2
+PAUSE_BETWEEN_COINS_SEC = 0.3
 DEBUG_FMT = "%H:%M:%S:%f"
 
 def setup_arm():
+    s = 1/0
     arm_controller.setup()
     arm_controller.on()
     #arm_controller.move_forward()
@@ -18,20 +21,47 @@ def setup_arm():
 
 
 def start_poll_loop():
+
+    logging.info("Starting polling loop")
+
     while True:
-        debug("Polling...")
-        to_dispense = dispenser_client.coins_to_dispense()
-        debug("Got: %d" % to_dispense)
-        while to_dispense > 0:
-            debug("\tDispensing coin...")
-            arm_controller.dispense_coin()
-            sleep_time = arm_controller.get_total_dispensing_time()
-            if to_dispense > 1:
-                sleep_time += PAUSE_BETWEEN_COINS_SEC
-            time.sleep(sleep_time)
-            to_dispense -= 1
-            debug("\t\tDispensed")
         time.sleep(POLLING_INTERVAL)
+        try:
+            poll()
+        except Exception as e:
+            logging.error("Exception during polling loop: %s" % traceback.format_exc())
+            continue
+    
+
+def poll():
+    
+    logging.debug("Polling...")
+
+    to_dispense = dispenser_client.coins_to_dispense()
+    if to_dispense == dispenser_client.ERROR_VALUE:
+        logging.error("Something went wrong with URL fetch, continuing loop")
+        return
+
+    log_str = "Got: %d" % to_dispense
+    if to_dispense:
+        logging.info(log_str)
+    else:
+        logging.debug(log_str)
+
+    if to_dispense > 0:
+        arm_controller.on()
+
+    while to_dispense > 0:
+        logging.info("\tDispensing coin...")
+        arm_controller.dispense_coin()
+        sleep_time = arm_controller.get_total_dispensing_time()
+        if to_dispense > 1:
+            sleep_time += PAUSE_BETWEEN_COINS_SEC
+        time.sleep(sleep_time)
+        to_dispense -= 1
+        logging.info("\t\tDispensed")
+
+    arm_controller.off()
 
 
 def debug(msg):
@@ -39,7 +69,13 @@ def debug(msg):
 
 
 if __name__ == "__main__":
-    setup_arm()
+    dispenser_log.setup_log()
+
+    try:        
+        setup_arm()
+    except Exception as e:
+        logging.error("Exception while setting up arm: %s" % traceback.format_exc())
+
     start_poll_loop()
         
             
