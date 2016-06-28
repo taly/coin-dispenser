@@ -1,7 +1,8 @@
 import urllib2
+import urllib
 import json
-import logging
 import traceback
+import dispenser_log
 
 ERROR_VALUE = -1
 #HOST = "http://localhost"
@@ -17,7 +18,17 @@ def coins_to_dispense():
         json_response = json.loads(str_response)
         coins = json_response["coins"]
     except Exception as e:
-        logging.error("Exception during fetching coins from server or formatting response: %s" % traceback.format_exc())
+        dispenser_log.error("Exception during fetching coins from server or formatting response: %s" % traceback.format_exc())
         return ERROR_VALUE
 
     return coins
+
+def play_kaching():
+    try:
+        url = "https://cpc-curz-app.herokuapp.com/play"
+        data = {"text": "coin"}
+        data_post = urllib.urlencode(data)
+        urllib2.urlopen(url=url, data=data_post)
+    except Exception as e:
+        dispenser_log.error("Coudln't play kaching: %s" % traceback.format_exc())
+    
